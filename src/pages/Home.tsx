@@ -63,24 +63,24 @@ const Home = () => {
           >
             Ver Menú <ChevronRight size={20} />
           </Link>
-          <button 
-            disabled={!isAvailable}
+          <Link 
+            to="/pedido"
             className={`px-8 py-4 rounded-full shadow-lg transform transition-all duration-300 flex items-center justify-center gap-2 ${
               isAvailable
                 ? "bg-gradient-to-r from-purple-800 to-indigo-900 text-white hover:shadow-xl hover:scale-105"
-                : "bg-gray-400 text-gray-200 cursor-not-allowed"
+                : "bg-gray-400 text-gray-200 cursor-not-allowed pointer-events-none"
             }`}
           >
             Hacer Pedido <ChevronRight size={20} />
-          </button>
+          </Link>
         </div>
         <p className="mt-4 text-sm text-gray-700">{isAvailable ? `Tiempo restante: ${timeLeft}` : `Disponible en: ${timeLeft}`}</p>
       </div>
       <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-indigo-900/10 to-transparent pointer-events-none" />
       <div className="mt-8 text-gray-600 text-sm text-center">
-        <p>📅 Horarios de pedidos:</p>
-        <p>🕖 7:00 AM - 9:30 AM</p>
-        <p>🕚 11:00 AM - 2:00 PM</p>
+        <p> Horarios de pedidos:</p>
+        <p>7:00 AM - 9:30 AM</p>
+        <p> 11:00 AM - 2:00 PM</p>
       </div>
     </div>
   );
