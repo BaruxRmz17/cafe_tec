@@ -10,6 +10,7 @@ import EditarPro from "./admin/editarPro";//
 import EliminarPro from "./admin/eliminarPro";//
 import PedidoAdmin from "./admin/pedidoR";//
 import Comentarios from "./admin/comentarios";//
+import VerPedidos from "./admin/verPedidos";
 
 
 
@@ -40,6 +41,8 @@ const App: React.FC = () => {
           <Route path="/HomeAdmin" element={<HomeAdmin />} />
           <Route path="/admin/ventasT" element={<VentasTotales />} /> {/* Ruta corregida */}
           <Route path="/admin/comentarios" element={<Comentarios />} />
+          <Route path="/admin/verPedidos" element={<VerPedidos />} />
+
 
 
           <Route path="/menu" element={<VerMenu />} />

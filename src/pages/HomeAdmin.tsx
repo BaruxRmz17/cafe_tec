@@ -1,7 +1,7 @@
 // src/pages/HomeAdmin.tsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Coffee, Edit, Trash2, MessageSquare, ShoppingCart, BarChart2 } from 'lucide-react'; // Íconos de Lucide
+import { Coffee, Edit, Trash2, MessageSquare, ShoppingCart, BarChart2, ClipboardList } from 'lucide-react'; // Agregué ClipboardList
 
 const HomeAdmin: React.FC = () => {
   return (
@@ -11,7 +11,7 @@ const HomeAdmin: React.FC = () => {
           Panel de Administración - Café Tec
         </h1>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Opción 1: Subir Producto */}
           <Link
             to="/admin/subirPro"
@@ -20,7 +20,7 @@ const HomeAdmin: React.FC = () => {
             <Coffee size={40} className="mb-4" />
             <span className="text-lg font-semibold">Subir Producto</span>
             <p className="text-sm text-center mt-2 opacity-80">
-              Agrega un nuevo item al menú
+              Agrega un nuevo producto al menú
             </p>
           </Link>
 
@@ -32,7 +32,7 @@ const HomeAdmin: React.FC = () => {
             <Edit size={40} className="mb-4" />
             <span className="text-lg font-semibold">Editar Producto</span>
             <p className="text-sm text-center mt-2 opacity-80">
-              Modifica items del menú
+              Modifica producto del menú
             </p>
           </Link>
 
@@ -44,20 +44,7 @@ const HomeAdmin: React.FC = () => {
             <Trash2 size={40} className="mb-4" />
             <span className="text-lg font-semibold">Eliminar Producto</span>
             <p className="text-sm text-center mt-2 opacity-80">
-              Borra items del menú
-            </p>
-          </Link>
-
-
-          {/* Opción 6: Realizar Pedido */}
-          <Link
-            to="/admin/pedidoR"
-            className="bg-blue-600 text-white p-6 rounded-xl shadow-lg hover:bg-blue-700 hover:scale-105 transform transition-all duration-300 flex flex-col items-center justify-center"
-          >
-            <ShoppingCart size={40} className="mb-4" />
-            <span className="text-lg font-semibold">Realizar Pedido</span>
-            <p className="text-sm text-center mt-2 opacity-80">
-              Haz un pedido con código de cliente
+              Borra un producto del menú
             </p>
           </Link>
 
@@ -85,6 +72,29 @@ const HomeAdmin: React.FC = () => {
             </p>
           </Link>
 
+          {/* Opción 6: Realizar Pedido */}
+          <Link
+            to="/admin/pedidoR"
+            className="bg-blue-600 text-white p-6 rounded-xl shadow-lg hover:bg-blue-700 hover:scale-105 transform transition-all duration-300 flex flex-col items-center justify-center"
+          >
+            <ShoppingCart size={40} className="mb-4" />
+            <span className="text-lg font-semibold">Realizar Pedido</span>
+            <p className="text-sm text-center mt-2 opacity-80">
+              Haz un pedido con código de cliente
+            </p>
+          </Link>
+
+          {/* Nueva Opción: Ver Pedidos */}
+          <Link
+            to="/admin/verPedidos"
+            className="bg-teal-600 text-white p-6 rounded-xl shadow-lg hover:bg-teal-700 hover:scale-105 transform transition-all duration-300 flex flex-col items-center justify-center"
+          >
+            <ClipboardList size={40} className="mb-4" />
+            <span className="text-lg font-semibold">Ver Pedidos</span>
+            <p className="text-sm text-center mt-2 opacity-80">
+              Consulta el estado de los pedidos
+            </p>
+          </Link>
         </div>
       </div>
     </div>
