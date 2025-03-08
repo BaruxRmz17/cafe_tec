@@ -14,6 +14,7 @@ interface Producto {
 interface ItemCarrito {
   producto: Producto;
   cantidad: number;
+  comentario: string;
 }
 
 interface MetodoPago {
@@ -54,7 +55,6 @@ const HacerPedido: React.FC = () => {
       const productosData = data || [];
       setProductos(productosData);
 
-      // Extraer categorías únicas
       const categoriasUnicas = Array.from(
         new Set(productosData.map((p) => p.categoria))
       ).sort();
@@ -93,7 +93,7 @@ const HacerPedido: React.FC = () => {
       ? productos
       : productos.filter((producto) => producto.categoria === filtroCategoria);
 
-  // Agregar producto al carrito
+  // Agregar producto al carrito con comentario vacío por defecto
   const agregarAlCarrito = (producto: Producto) => {
     const existe = carrito.find((item) => item.producto.id === producto.id);
     if (existe) {
@@ -105,7 +105,7 @@ const HacerPedido: React.FC = () => {
         )
       );
     } else {
-      setCarrito([...carrito, { producto, cantidad: 1 }]);
+      setCarrito([...carrito, { producto, cantidad: 1, comentario: '' }]);
     }
   };
 
@@ -126,6 +126,15 @@ const HacerPedido: React.FC = () => {
         )
       );
     }
+  };
+
+  // Cambiar comentario en el carrito
+  const cambiarComentario = (productoId: number, comentario: string) => {
+    setCarrito(
+      carrito.map((item) =>
+        item.producto.id === productoId ? { ...item, comentario } : item
+      )
+    );
   };
 
   // Calcular total
@@ -211,11 +220,12 @@ const HacerPedido: React.FC = () => {
 
     const pedidoId = pedidoData.id;
 
-    // 3. Insertar detalles del pedido
+    // 3. Insertar detalles del pedido con comentarios
     const detalles = carrito.map((item) => ({
       pedido_id: pedidoId,
       producto_id: item.producto.id,
       cantidad: item.cantidad,
+      comentario: item.comentario || null,
     }));
 
     const { error: detalleError } = await supabase
@@ -227,11 +237,13 @@ const HacerPedido: React.FC = () => {
       return;
     }
 
-    setSuccess(`Pedido realizado con éxito. Código: ${codigo}`);
+    // Mostrar mensaje de éxito con el código
+    setSuccess(`Pedido realizado con éxito. Tu código para recoger es: ${codigo}`);
     setCarrito([]);
     setMetodoPago('');
     setNombreCliente('');
     setCorreoCliente('');
+    window.scrollTo(0, 0); // Volver al inicio para asegurar que el mensaje sea visible
   };
 
   return (
@@ -242,6 +254,14 @@ const HacerPedido: React.FC = () => {
         </h2>
 
         {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
+        {success && (
+          <div className="mb-8 text-center bg-green-100 p-4 rounded-lg border border-green-300">
+            <p className="text-green-700 text-xl md:text-2xl font-bold">{success}</p>
+            <p className="text-green-600 text-sm mt-2">
+              Guarda este código, lo necesitarás para recoger tu pedido.
+            </p>
+          </div>
+        )}
 
         {/* Lista de productos y carrito */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -304,27 +324,41 @@ const HacerPedido: React.FC = () => {
                 {carrito.map((item) => (
                   <div
                     key={item.producto.id}
-                    className="flex justify-between items-center p-2 border-b"
+                    className="flex flex-col p-2 border-b"
                   >
-                    <div>
-                      <p className="font-semibold text-gray-800">{item.producto.nombre}</p>
-                      <p className="text-sm text-gray-600">
-                        ${item.producto.precio.toFixed(2)} x
-                        <input
-                          type="number"
-                          value={item.cantidad}
-                          onChange={(e) => cambiarCantidad(item.producto.id, e.target.value)}
-                          min="1"
-                          className="w-12 mx-2 p-1 border rounded"
-                        />
-                      </p>
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="font-semibold text-gray-800">{item.producto.nombre}</p>
+                        <p className="text-sm text-gray-600">
+                          ${item.producto.precio.toFixed(2)} x
+                          <input
+                            type="number"
+                            value={item.cantidad}
+                            onChange={(e) => cambiarCantidad(item.producto.id, e.target.value)}
+                            min="1"
+                            className="w-12 mx-2 p-1 border rounded"
+                          />
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => eliminarDelCarrito(item.producto.id)}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        <Trash2 size={20} />
+                      </button>
                     </div>
-                    <button
-                      onClick={() => eliminarDelCarrito(item.producto.id)}
-                      className="text-red-600 hover:text-red-800"
-                    >
-                      <Trash2 size={20} />
-                    </button>
+                    <div className="mt-2">
+                      <label className="text-sm text-gray-700">Comentario:</label>
+                      <input
+                        type="text"
+                        value={item.comentario}
+                        onChange={(e) =>
+                          cambiarComentario(item.producto.id, e.target.value)
+                        }
+                        placeholder="Ej. Sin verdura"
+                        className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+                      />
+                    </div>
                   </div>
                 ))}
                 <p className="text-lg font-bold text-indigo-900 mt-4">
@@ -410,13 +444,6 @@ const HacerPedido: React.FC = () => {
             </form>
           </div>
         </div>
-
-        {/* Mensaje de éxito con código más grande */}
-        {success && (
-          <div className="mt-8 text-center">
-            <p className="text-green-500 text-2xl md:text-3xl font-bold">{success}</p>
-          </div>
-        )}
 
         {/* Botones de navegación */}
         <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4">

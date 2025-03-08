@@ -13,6 +13,7 @@ interface DetallePedido {
     categoria: string;
   };
   cantidad: number;
+  comentario: string | null;
 }
 
 interface Pedido {
@@ -54,6 +55,7 @@ const VerPedidos: React.FC = () => {
           detalle_pedido (
             id,
             cantidad,
+            comentario,
             producto (
               id,
               nombre,
@@ -62,15 +64,15 @@ const VerPedidos: React.FC = () => {
             )
           )
         `)
-        .eq('estado', 'Pendiente') // Filtra explícitamente para mostrar solo pedidos pendientes
-        .order('id', { ascending: false }); // Más recientes primero
+        .eq('estado', 'Pendiente')
+        .order('id', { ascending: false });
 
       if (error) {
         setError('Error al cargar los pedidos: ' + error.message);
         return;
       }
 
-      setPedidos(data || []); // Solo se mostrarán pedidos con estado "Pendiente"
+      setPedidos(data || []);
     };
 
     fetchPedidos();
@@ -87,7 +89,6 @@ const VerPedidos: React.FC = () => {
     setError('');
     setSuccess('');
 
-    // Eliminar el pedido (los detalles se eliminan automáticamente con CASCADE)
     const { error: deleteError } = await supabase
       .from('pedido')
       .delete()
@@ -98,7 +99,6 @@ const VerPedidos: React.FC = () => {
       return;
     }
 
-    // Actualizar la lista localmente (el pedido eliminado ya no aparecerá)
     setPedidos(pedidos.filter((p) => p.id !== pedidoId));
     setSuccess(`Pedido #${pedidoCodigo} eliminado exitosamente.`);
   };
@@ -106,8 +106,8 @@ const VerPedidos: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-white to-purple-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
-         {/* Botón para volver al Home */}
-         <button
+        {/* Botón para volver al Home */}
+        <button
           onClick={() => navigate('/HomeAdmin')}
           className="mb-6 px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition"
         >
@@ -159,10 +159,15 @@ const VerPedidos: React.FC = () => {
                     <p className="text-sm font-semibold text-gray-700">Productos:</p>
                     <ul className="text-sm text-gray-600">
                       {pedido.detalle_pedido.map((detalle) => (
-                        <li key={detalle.id}>
+                        <li key={detalle.id} className="mt-1">
                           {detalle.producto.nombre} ({detalle.producto.categoria}) x
                           {detalle.cantidad} - $
                           {(detalle.producto.precio * detalle.cantidad).toFixed(2)}
+                          {detalle.comentario && (
+                            <span className="block text-gray-500 italic">
+                              Comentario: {detalle.comentario}
+                            </span>
+                          )}
                         </li>
                       ))}
                     </ul>
@@ -172,8 +177,6 @@ const VerPedidos: React.FC = () => {
             </div>
           )}
         </div>
-
-      
       </div>
     </div>
   );
