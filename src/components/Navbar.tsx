@@ -5,17 +5,38 @@ import React from "react";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isOrderAvailable, setIsOrderAvailable] = useState(true);
+  const [isOrderAvailable, setIsOrderAvailable] = useState(false);
 
   useEffect(() => {
     const checkOrderAvailability = () => {
-      const now = new Date();
-      const hours = now.getHours();
-      const startHour = 8;
-      const endHour = 22;
-      setIsOrderAvailable(hours >= startHour && hours < endHour);
+      // Get current time in Mexico Central Time (Aguascalientes)
+      const now = new Date().toLocaleString("en-US", { timeZone: "America/Mexico_City" });
+      const date = new Date(now);
+      const hours = date.getHours();
+      const minutes = date.getMinutes();
+      
+      // Convert time to minutes for easier comparison
+      const totalMinutes = hours * 60 + minutes;
+      
+      // Define time ranges in minutes
+      const morningStart = 7 * 60;      // 7:00 AM
+      const morningEnd = 9 * 60 + 30;   // 9:30 AM
+      const afternoonStart = 11 * 60;   // 11:00 AM
+      const afternoonEnd = 14 * 60;     // 2:00 PM
+      
+      // Check if current time falls within available periods
+      const isMorningPeriod = totalMinutes >= morningStart && totalMinutes < morningEnd;
+      const isAfternoonPeriod = totalMinutes >= afternoonStart && totalMinutes < afternoonEnd;
+      
+      setIsOrderAvailable(isMorningPeriod || isAfternoonPeriod);
     };
+
+    // Check immediately and then every minute
     checkOrderAvailability();
+    const interval = setInterval(checkOrderAvailability, 60000); // Update every minute
+    
+    // Cleanup interval on component unmount
+    return () => clearInterval(interval);
   }, []);
 
   const scrollToTop = () => {
